@@ -17,6 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
+#include <linux/version.h>
 #include <linux/pci.h>
 #include <linux/mod_devicetable.h>
 
@@ -303,7 +304,11 @@ static int __init xil_xvc_init(void)
 	cdev_add(&xvc_char_ioc_dev, xvc_ioc_dev_region, CHAR_DEVICES_MAX);
 
 	// Register the character device class for the actual files
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 4, 0)
 	xvc_dev_class = class_create(THIS_MODULE, "xil_xvc_class");
+#else
+	xvc_dev_class = class_create("xil_xvc_class");
+#endif
 	if (IS_ERR(xvc_dev_class)) {
 		xil_xvc_cleanup();
 		return PTR_ERR(xvc_dev_class);
